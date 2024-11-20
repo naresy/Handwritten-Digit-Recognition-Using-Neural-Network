@@ -72,7 +72,8 @@ class Network:
                 self.weight2 -= self.learning_rate * weight2_gradient
                 self.bias2 -= self.learning_rate * bias2_gradient
 
-                print('=== Epoch: {:d}/{:d}\tIteration:{:d}\tLoss: {:.2f} ===').format(epoch+1, self.num_epochs, iteration+1, loss)
+                print('=== Epoch: {:d}/{:d}\tIteration: {:d}\tLoss: {:.2f} ==='.format(epoch+1, self.num_epochs, iteration+1, loss))
+
                 iteration += self.batch_size
         '''
         obj = [self.weight1, self.bias1, self.weight2, self.bias2]
