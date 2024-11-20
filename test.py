@@ -18,7 +18,7 @@ x_test = X_test / 255 #normalization
 y_test = test_labels
 
 with open('weights.pkl', 'rb') as handle:
-    b = pickle.load(handle)
+    b = pickle.load(handle, encoding='latin1')
 
 weight1 = b[0]
 bias1 = b[1]

@@ -87,5 +87,6 @@ class Network:
         scores = np.dot(hidden_layer, self.weight2) + self.bias2
         probs = function.softmax(scores)
         acc = float(np.sum(np.argmax(probs, 1) == labels)) / float(len(labels))
-        print('Test accuracy: {:.2f}%').format(acc*100)
+        print('Test accuracy: {:.2f}%'.format(acc * 100))
+
 
