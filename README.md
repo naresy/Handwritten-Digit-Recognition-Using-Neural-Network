@@ -81,7 +81,6 @@
 <ol>
   <li>Clone this repository: <code>git clone https://github.com/naresy/Handwritten-Digit-Recognition-Using-Neural-Network.git</code></li>
   <li>Navigate to the project directory: <code>cd Handwritten-Digit-Recognition-Using-Neural-Network</code></li>
-  <li>Install dependencies: <code>pip install -r requirements.txt</code></li>
   <li>Run the application: <code>python main.py</code></li>
 </ol>
 
