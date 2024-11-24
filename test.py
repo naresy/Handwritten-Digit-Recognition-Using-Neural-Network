@@ -1,52 +1,59 @@
 import numpy as np
-from network import Network
-import mnist
-import pickle
-import function
 import cv2
+import pickle
+import function  # Your custom module containing `relu` and `softmax`
 
-# load data
-num_classes = 10
-test_images = mnist.test_images()
-test_labels = mnist.test_labels()
-
-print("Training...")
-
-# data processing
-X_test = test_images.reshape(test_images.shape[0], test_images.shape[1]*test_images.shape[2]).astype('float32') #flatten 28x28 to 784x1 vectors, [60000, 784]
-x_test = X_test / 255 #normalization
-y_test = test_labels
-
+# Load pre-trained weights
 with open('weights.pkl', 'rb') as handle:
-    b = pickle.load(handle, encoding='latin1')
+    weights = pickle.load(handle, encoding='latin1')
 
-weight1 = b[0]
-bias1 = b[1]
-weight2 = b[2]
-bias2 = b[3]
+weight1 = weights[0]
+bias1 = weights[1]
+weight2 = weights[2]
+bias2 = weights[3]
 
-num = 0
-
-while num < test_images.shape[0]:
-    input_layer = np.dot(x_test[num:num+1], weight1)
-    hidden_layer = function.relu(input_layer + bias1)
+# Function to predict the digit
+def predict_digit(image, weight1, bias1, weight2, bias2):
+    # Flatten and normalize the image
+    img_flatten = image.reshape(1, -1).astype('float32') / 255.0
+    # Feedforward through the neural network
+    input_layer = np.dot(img_flatten, weight1) + bias1
+    hidden_layer = function.relu(input_layer)
     scores = np.dot(hidden_layer, weight2) + bias2
     probs = function.softmax(scores)
-    predict = np.argmax(probs)
+    return np.argmax(probs)
 
-    img = np.zeros([28,28,3])
+# Mouse callback for drawing
+def draw(event, x, y, flags, param):
+    global drawing, canvas
+    if event == cv2.EVENT_LBUTTONDOWN:
+        drawing = True
+    elif event == cv2.EVENT_MOUSEMOVE and drawing:
+        cv2.circle(canvas, (x, y), 10, (255, 255, 255), -1)
+    elif event == cv2.EVENT_LBUTTONUP:
+        drawing = False
 
-    img[:,:,0] = test_images[num]
-    img[:,:,1] = test_images[num]
-    img[:,:,2] = test_images[num]
+# Initialize canvas
+canvas = np.zeros((280, 280), dtype='uint8')
+drawing = False
 
+cv2.namedWindow('Draw a Digit')
+cv2.setMouseCallback('Draw a Digit', draw)
 
-    resized_image = cv2.resize(img, (100, 100)) 
-    cv2.putText(resized_image, str(predict), (5,20), cv2.FONT_HERSHEY_DUPLEX, .7, (0,255, 0), 1)
-    cv2.imshow('input', resized_image)
-    k = cv2.waitKey(0)
-    if k==27:    # Esc key to stop
+while True:
+    cv2.imshow('Draw a Digit', canvas)
+    key = cv2.waitKey(1)
+
+    if key == ord('r'):  # Press 'r' to reset the canvas
+        canvas.fill(0)
+
+    if key == ord('p'):  # Press 'p' to predict
+        # Resize canvas to 28x28 and predict
+        resized = cv2.resize(canvas, (28, 28), interpolation=cv2.INTER_AREA)
+        prediction = predict_digit(resized, weight1, bias1, weight2, bias2)
+        print(f"Predicted Digit: {prediction}")
+
+    if key == 27:  # Press 'ESC' to exit
         break
-    num += 1
 
 cv2.destroyAllWindows()
